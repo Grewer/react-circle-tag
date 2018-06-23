@@ -29,10 +29,6 @@ class CircleTag extends Component {
     return isFirst ? maxRadius : (percent / maxPercent) * maxRadius
   }
 
-  pretreatment() {
-
-  }
-
   stepFirst() {
     let {store, width, height} = this.$data
     for (let i = 0, l = store.length; i < l; i++) {
@@ -141,6 +137,8 @@ class CircleTag extends Component {
     let {height, width} = this.props
     width = width || obj.clientWidth
     height = height || obj.clientHeight
+    obj.style.width = width + 'px'
+    obj.style.height = height + 'px'
     this.$data = {
       ...this.$data,
       width, height,
@@ -159,24 +157,21 @@ class CircleTag extends Component {
       this.addBall(index, radius, item.px, item.py, item.value, mainColor, tColor, docfrag)
     })
     obj.appendChild(docfrag)
+    // 后续使用 mvvm 方式插入 需添加 load 属性
   }
 
+  clickCb = ({target}) => {
+    if (target.nodeName === 'FIGURE') {
+      this.props.callback && this.props.callback(target, target.textContent) // to add type
+    }
+  }
 
   render() {
     return (
-      <div id="grewer" ref="grewer">
+      <div id="grewer" ref="grewer" onClick={this.clickCb}>
       </div>
     )
   }
-}
-
-CircleTag.propTypes = {
-  data: PropTypes.arrayOf(
-    PropTypes.shape({
-      type: PropTypes.string.isRequired,
-      value: PropTypes.number.isRequired,
-    })
-  )
 }
 
 export default CircleTag;

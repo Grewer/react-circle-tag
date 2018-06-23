@@ -1,10 +1,12 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import './App.css';
-import Circle from 'react-circle-tag'
+// import Circle from 'react-circle-tag'
+import Circle from './test'
+
 const data = [
   {
     type: '语文',
-    value: 50
+    value: 50,
   },
   {
     type: '数学',
@@ -29,10 +31,14 @@ const data = [
 ]
 
 class App extends Component {
+  clickCb(target, value, type) {
+    console.log(target, value, type)
+  }
+
   render() {
     return (
       <div className="App">
-        <Circle data={data} width="500" height="300" />
+        <Circle data={data} height="300" callback={this.clickCb}/>
       </div>
     );
   }
