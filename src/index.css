@@ -1,8 +1,5 @@
 #grewer {
-    width: 500px;
-    height: 300px;
     position: relative;
-    border: 1px solid #999;
 }
 #grewer div {
     position: absolute;

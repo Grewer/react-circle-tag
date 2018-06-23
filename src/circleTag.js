@@ -2,10 +2,11 @@ import React, {Component} from 'react';
 import './index.css';
 import PropTypes from 'prop-types';
 
+
 class CircleTag extends Component {
   constructor(props) {
     super(props)
-    let {data, width, height} = props
+    let {data} = props
     const countValue = data.reduce((t, o) => {
       return t + o.value
     }, 0)
@@ -16,14 +17,10 @@ class CircleTag extends Component {
     }).sort((p, n) => {
       return n.value - p.value
     })
-    const minL = width > height ? height : width;
-    // 后续使用obj的width和height
     this.$data = {
       store,
       countValue,
       maxPercent: store[0].percent,
-      maxRadius: .5 * minL,
-      width, height
     }
   }
 
@@ -140,6 +137,15 @@ class CircleTag extends Component {
   }
 
   componentDidMount() {
+    const obj = this.refs.grewer
+    let {height, width} = this.props
+    width = width || obj.clientWidth
+    height = height || obj.clientHeight
+    this.$data = {
+      ...this.$data,
+      width, height,
+      maxRadius: .5 * (width > height ? height : width)
+    }
     this.stepFirst()
     let {store} = this.$data
     let docfrag = document.createDocumentFragment();
@@ -152,13 +158,13 @@ class CircleTag extends Component {
       let tColor = `rgba(${color2[0]}, ${color2[1]} , ${color2[2]},${alpha})`
       this.addBall(index, radius, item.px, item.py, item.value, mainColor, tColor, docfrag)
     })
-    document.getElementById('grewer').appendChild(docfrag)
+    obj.appendChild(docfrag)
   }
 
 
   render() {
     return (
-      <div id="grewer">
+      <div id="grewer" ref="grewer">
       </div>
     )
   }
