@@ -11,6 +11,10 @@ class CircleTag extends Component {
       return t + o.value
     }, 0)
 
+    this.state = {
+      load: false
+    }
+
     const store = data.map(i => {
       i.percent = ((+i.value) / countValue).toFixed(2)
       return i
@@ -114,23 +118,6 @@ class CircleTag extends Component {
     return true
   }
 
-  addBall(index, radius, x, y, value, color1, color2, docfrag) {
-    let section = document.createElement('div')
-    section.style.width = radius + 'px'
-    section.style.height = radius + 'px'
-    section.style.left = x + 'px'
-    section.style.top = y + 'px'
-    let figure = document.createElement('figure')
-    figure.className = 'ball'
-    figure.style.background = `radial-gradient(circle at 50% 120%, ${color1}, ${color2} 100%)`
-    figure.style.textAlign = 'center';
-    figure.style.color = '#fff'
-    figure.style.lineHeight = radius + 'px'
-    let text = document.createTextNode(value)
-    figure.appendChild(text)
-    section.appendChild(figure)
-    docfrag.appendChild(section)
-  }
 
   componentDidMount() {
     const obj = this.refs.grewer
@@ -145,33 +132,51 @@ class CircleTag extends Component {
       maxRadius: .5 * (width > height ? height : width)
     }
     this.stepFirst()
-    let {store} = this.$data
-    let docfrag = document.createDocumentFragment();
-    store.forEach((item, index) => {
-      let radius = item.radius * 2
-      const alpha = (Math.random() * 0.5 + 0.5).toFixed(2)
-      const color1 = [Math.floor(Math.random() * 256), Math.floor(Math.random() * 256), Math.floor(Math.random() * 256)]
-      let mainColor = `rgba(${color1[0]}, ${color1[1]} , ${color1[2]},${alpha})`
-      const color2 = color1.map(i => Math.floor(i * 0.5))
-      let tColor = `rgba(${color2[0]}, ${color2[1]} , ${color2[2]},${alpha})`
-      this.addBall(index, radius, item.px, item.py, item.value, mainColor, tColor, docfrag)
-    })
-    obj.appendChild(docfrag)
-    // 后续使用 mvvm 方式插入 需添加 load 属性
+    this.setState({load: true})
   }
 
   clickCb = ({target}) => {
     if (target.nodeName === 'FIGURE') {
-      this.props.callback && this.props.callback(target, target.textContent) // to add type
+      this.props.callback && this.props.callback(target, target.textContent, target.getAttribute('data-type')) // to add type
     }
   }
 
   render() {
     return (
       <div id="grewer" ref="grewer" onClick={this.clickCb}>
+        {
+          this.state.load && this.$data.store.map((item, index) => {
+            let radius = item.radius * 2
+            const alpha = (Math.random() * 0.5 + 0.5).toFixed(2)
+            const color1 = [Math.floor(Math.random() * 256), Math.floor(Math.random() * 256), Math.floor(Math.random() * 256)]
+            let mainColor = `rgba(${color1[0]}, ${color1[1]} , ${color1[2]},${alpha})`
+            const color2 = color1.map(i => Math.floor(i * 0.5))
+            let tColor = `rgba(${color2[0]}, ${color2[1]} , ${color2[2]},${alpha})`
+            return (
+              <div key={index}
+                   style={{width: radius + 'px', height: radius + 'px', left: item.px + 'px', top: item.py + 'px'}}>
+                <figure className="ball" style={{
+                  background: `radial-gradient(circle at 50% 120%, ${mainColor}, ${tColor} 100%)`,
+                  lineHeight: radius + 'px',
+                  color: '#fff'
+                }} data-type={item.type}>
+                  {item.value}
+                </figure>
+              </div>)
+          })
+        }
       </div>
     )
   }
 }
 
+CircleTag.propTypes = {
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      type: PropTypes.string.isRequired,
+      value: PropTypes.number.isRequired,
+    })
+  )
+}
+// todo
 export default CircleTag;
