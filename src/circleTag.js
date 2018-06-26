@@ -176,7 +176,8 @@ CircleTag.propTypes = {
       type: PropTypes.string.isRequired,
       value: PropTypes.number.isRequired,
     })
-  )
+  ),
+  height: PropTypes.number.isRequired,
+  callback: PropTypes.func
 }
-// todo
 export default CircleTag;
